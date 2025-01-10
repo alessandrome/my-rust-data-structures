@@ -1,4 +1,5 @@
 mod singly_linked_list;
+use singly_linked_list::{SinglyLinkedList};
 
 struct Ex {
     pub v: i32,
@@ -24,4 +25,11 @@ fn main() {
         println!("OK {}", taken.v);
     }
     println!("Is None: {}", ob.is_none());
+
+    let mut ll: SinglyLinkedList<i32> = SinglyLinkedList::new();
+    ll.push_back(1);
+    ll.push_back(2);
+    ll.push_back(3);
+    let r = ll.pop_back();
+    println!("Test pop: {}", r.is_some());
 }

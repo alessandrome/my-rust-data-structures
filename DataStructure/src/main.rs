@@ -32,7 +32,7 @@ fn main() {
     }
     println!("Is None: {}", ob.is_none());
 
-    let mut ll: SinglyLinkedList<i32> = SinglyLinkedList::new();
+    let mut ll: SinglyLinkedList<i32> = SinglyLinkedList::<i32>::new();
     ll.print();
     ll.push_back(1);
     ll.print();

@@ -19,6 +19,21 @@ impl<T: Display> SinglyLinkedList<T> {
             length: 0,
         }
     }
+
+    /// Push a new element to attach to the list tail
+    ///
+    /// # Arguments
+    ///
+    /// * `item`: Element T you want to append
+    ///
+    /// returns: ()
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let mut ll = singly_linked_list::<i32>::new();
+    /// ll.push_back(5); // Add value '5' as last element of the list
+    /// ```
     pub fn push_back(&mut self, item: T) {
         let mut new_node = Box::new(Node::new(item));
         let new_nod_ptr = NonNull::new(&mut *new_node);

@@ -1,8 +1,8 @@
 pub mod node;
 
+use node::Node;
 use std::any::type_name;
 use std::fmt::Display;
-use node::Node;
 use std::ptr::NonNull;
 
 pub struct SinglyLinkedList<T> {
@@ -25,7 +25,9 @@ impl<T: Display> SinglyLinkedList<T> {
         if self.tail.is_none() {
             self.head = Some(new_node);
         } else {
-            unsafe { self.tail.unwrap().as_mut().next = Some(new_node); }
+            unsafe {
+                self.tail.unwrap().as_mut().next = Some(new_node);
+            }
         }
         self.tail = new_nod_ptr;
         self.length += 1;
@@ -41,25 +43,22 @@ impl<T: Display> SinglyLinkedList<T> {
                 }
             }
 
-            let mut second_last_node: _= self.head.as_mut().unwrap();
+            let mut second_last_node: _ = self.head.as_mut().unwrap();
             let mut last_node = &second_last_node.next;
+            second_last_node = second_last_node.next.as_mut().unwrap();  // Questo causerà un errore
+            last_node = &second_last_node.next;
+
             while let Some(last_node_box) = last_node {
-                println!("{}", last_node_box.value);
-                second_last_node = second_last_node.next.as_mut().unwrap();
+                if last_node_box.next.is_some() {
+                    second_last_node = second_last_node.next.as_mut().unwrap();
+                } else {
+                    break;
+                }
                 last_node = &second_last_node.next;
             }
-            fn print_type_of<T>(_: &T) {
-                println!("Il tipo è: {}", type_name::<T>());
-
-            }
-            print_type_of(&second_last_node);
-            println!("val: {}", second_last_node.value);
-            // let mut second_last_node_ref = second_last_node;
-
-            // if let Some(node) = second_last_node {
-            //     // Ora puoi accedere al nodo in modo immutabile
-            // }
-
+            self.tail = Some(NonNull::from(&mut **second_last_node));
+            let removed = second_last_node.next.take().unwrap();
+            return Some(removed.value);
         }
         None
     }

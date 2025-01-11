@@ -1,6 +1,12 @@
 mod singly_linked_list;
+
+use std::any::type_name;
 use singly_linked_list::{SinglyLinkedList};
 
+
+fn print_type_of<T>(_: &T) {
+    println!("Il tipo è: {}", type_name::<T>());
+}
 struct Ex {
     pub v: i32,
 }

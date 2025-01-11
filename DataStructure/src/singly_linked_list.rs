@@ -32,6 +32,7 @@ impl<T: Display> SinglyLinkedList<T> {
         self.tail = new_nod_ptr;
         self.length += 1;
     }
+
     pub fn pop_back(&mut self) -> Option<T> {
         if self.length > 0 {
             self.length -= 1;
@@ -45,8 +46,6 @@ impl<T: Display> SinglyLinkedList<T> {
 
             let mut second_last_node: _ = self.head.as_mut().unwrap();
             let mut last_node = &second_last_node.next;
-            second_last_node = second_last_node.next.as_mut().unwrap();  // Questo causerà un errore
-            last_node = &second_last_node.next;
 
             while let Some(last_node_box) = last_node {
                 if last_node_box.next.is_some() {
@@ -62,10 +61,49 @@ impl<T: Display> SinglyLinkedList<T> {
         }
         None
     }
+
     pub fn push_front(&mut self, item: T) {
-        let new_node = Node::new(item);
-        // if self.head.is_none() {
-        //     self.head = Some(Box::new(new_node));
-        // }
+        let mut new_node = Box::new(Node::new(item));
+        let new_nod_ptr = NonNull::new(&mut *new_node);
+        if self.tail.is_none() {
+            self.tail = new_nod_ptr;
+        } else {
+            new_node.next = self.head.take();
+        }
+        self.head = Some(new_node);
+        self.length += 1;
+    }
+
+    pub fn pop_front(&mut self) -> Option<T> {
+        if self.length > 0 {
+            self.length -= 1;
+
+            if let Some(node) = &self.head {
+                if node.next.is_none() {
+                    self.tail = None;
+                    return Some(self.head.take()?.value);
+                }
+            }
+            let old_head = self.head.take()?;
+            self.head = old_head.next;
+            return Some(old_head.value);
+        }
+        None
+    }
+
+    pub fn print(&self) {
+        if self.length > 0 {
+            let mut node_opt = &self.head;
+            while let Some(node) = node_opt {
+                print!("({})", node.value);
+                if node.next.is_some() {
+                    print!(" -> ");
+                }
+                node_opt = &node.next;
+            }
+            println!("");
+        } else {
+            println!("()");
+        }
     }
 }

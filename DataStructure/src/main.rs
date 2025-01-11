@@ -33,9 +33,24 @@ fn main() {
     println!("Is None: {}", ob.is_none());
 
     let mut ll: SinglyLinkedList<i32> = SinglyLinkedList::new();
+    ll.print();
     ll.push_back(1);
+    ll.print();
     ll.push_back(2);
+    ll.print();
     ll.push_back(3);
+    ll.print();
     let r = ll.pop_back();
-    println!("Test pop: {}", r.is_some());
+    ll.print();
+    ll.push_front(5);
+    ll.print();
+    ll.push_front(6);
+    ll.print();
+    ll.push_back(7);
+    ll.print();
+    ll.pop_back();
+    ll.print();
+    ll.pop_front();
+    ll.print();
+    // println!("Test pop: {}", r.is_some());
 }

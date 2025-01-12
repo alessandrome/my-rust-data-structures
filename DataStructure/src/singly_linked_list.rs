@@ -106,6 +106,21 @@ impl<T: Display> SinglyLinkedList<T> {
         None
     }
 
+    pub fn get_ref(&self, index: usize) -> Option<&T> {
+        if index < self.length {
+            let mut node_box = self.head.as_ref().unwrap();
+            for _ in 0..index {
+                node_box = node_box.next.as_ref().unwrap();
+            }
+            return Some(&&node_box.value);
+        }
+        None
+    }
+
+    pub fn len(&self) -> usize {
+        self.length
+    }
+
     pub fn print(&self) {
         if self.length > 0 {
             let mut node_opt = &self.head;

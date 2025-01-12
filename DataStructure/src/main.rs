@@ -25,13 +25,15 @@ fn test(mut op: Option<Box<Ex>>) {
 }
 
 fn main() {
-    let mut ob: Option<Box<Ex>> = Some(Box::new(Ex{v:22}));
-    println!("Val: {}", ob.as_ref().unwrap().v);
-    if let Some(taken) = &ob {
-        println!("OK {}", taken.v);
+    {
+        let mut ob: Option<Box<Ex>> = Some(Box::new(Ex { v: 22 }));
+        println!("Val: {}", ob.as_ref().unwrap().v);
+        if let Some(taken) = &ob {
+            println!("OK {}", taken.v);
+        }
+        println!("Is None: {}", ob.is_none());
     }
-    println!("Is None: {}", ob.is_none());
-
+    println!("\nTrying pushes and pops");
     let mut ll: SinglyLinkedList<i32> = SinglyLinkedList::<i32>::new();
     ll.print();
     ll.push_back(1);
@@ -52,5 +54,17 @@ fn main() {
     ll.print();
     ll.pop_front();
     ll.print();
+    ll.push_back(7);
+    ll.push_front(8);
+    ll.print();
+    println!();
+    println!("Iterate with .len and using .get_ref");
+    for i in 0..ll.len() {
+        print!("{}", ll.get_ref(i).unwrap());
+        if i != ll.len() - 1 {
+            print!(" -> ");
+        }
+    }
+    println!();
     // println!("Test pop: {}", r.is_some());
 }

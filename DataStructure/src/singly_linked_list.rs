@@ -11,7 +11,7 @@ pub struct SinglyLinkedList<T> {
     length: usize,
 }
 
-impl<T: Display> SinglyLinkedList<T> {
+impl<T: Display + PartialEq> SinglyLinkedList<T> {
     pub fn new() -> SinglyLinkedList<T> {
         SinglyLinkedList {
             tail: None,
@@ -112,7 +112,30 @@ impl<T: Display> SinglyLinkedList<T> {
             for _ in 0..index {
                 node_box = node_box.next.as_ref().unwrap();
             }
-            return Some(&&node_box.value);
+            return Some(&node_box.value);
+        }
+        None
+    }
+
+    pub fn get_mut(&mut self, index: usize) -> Option<&mut T> {
+        if index < self.length {
+            let mut node_box = self.head.as_mut().unwrap();
+            for _ in 0..index {
+                node_box = node_box.next.as_mut().unwrap();
+            }
+            return Some(&mut node_box.value);
+        }
+        None
+    }
+
+    pub fn find(&self, value: &T) -> Option<usize> {
+        let mut node_opt = self.head.as_ref();
+        for i in 0..self.length {
+            let node_box = node_opt.unwrap();
+            if node_box.value == *value {
+                return Some(i);
+            }
+            node_opt = node_box.next.as_ref();
         }
         None
     }

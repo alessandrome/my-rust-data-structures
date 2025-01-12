@@ -56,6 +56,7 @@ fn main() {
     ll.print();
     ll.push_back(7);
     ll.push_front(8);
+    ll.push_front(13);
     ll.print();
     println!();
     println!("Iterate with .len and using .get_ref");
@@ -66,5 +67,24 @@ fn main() {
         }
     }
     println!();
+    println!("Iterate with .len and using .get_mut");
+    for i in 0..ll.len() {
+        let mut val = ll.get_mut(i).unwrap();
+        if i % 2 == 0 {
+            *val += 1;
+        }
+        print!("{}", val);
+        if i != ll.len() - 1 {
+            print!(" -> ");
+        }
+    }
+    println!();
+    println!(".print list");
+    ll.print();
+    println!();
+    println!("Use .find (Index position)");
+    print!("{}", ll.find(&8).unwrap());
+    if let Some(val) = ll.find(&11) { print!(" {}", val) } else { print!(" None") };
+    print!(" {}", ll.find(&7).unwrap());
     // println!("Test pop: {}", r.is_some());
 }

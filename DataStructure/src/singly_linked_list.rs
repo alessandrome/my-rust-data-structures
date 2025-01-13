@@ -106,6 +106,17 @@ impl<T: Display + PartialEq> SinglyLinkedList<T> {
         None
     }
 
+    pub fn get(&self, index: usize) -> Option<T> where T: Clone {
+        if index < self.length {
+            let mut node_box = self.head.as_ref().unwrap();
+            for _ in 0..index {
+                node_box = node_box.next.as_ref().unwrap();
+            }
+            return Some(node_box.value.clone());
+        }
+        None
+    }
+
     pub fn get_ref(&self, index: usize) -> Option<&T> {
         if index < self.length {
             let mut node_box = self.head.as_ref().unwrap();
@@ -138,6 +149,36 @@ impl<T: Display + PartialEq> SinglyLinkedList<T> {
             node_opt = node_box.next.as_ref();
         }
         None
+    }
+
+    pub fn remove(&mut self, index: usize) -> bool {
+        if index < self.length {
+            self.length -= 1;
+            if self.length == 0 {
+                // Just one element
+                self.head = None;
+                self.tail = None;
+            } else {
+                let mut pre_node: _ = self.head.as_mut().unwrap();
+                let mut pre_node_opt: _ = None;
+                let mut node_opt = self.head.as_mut();
+                for i in 0..index {
+                    pre_node = node_opt.unwrap();
+                    node_opt = pre_node.next.as_mut();
+                    pre_node_opt = Some(&mut pre_node);
+                }
+                // node_opt = &None;
+
+                match pre_node_opt {
+                    None => {
+
+                    }
+                    Some(_) => {}
+                }
+            }
+            return true;
+        }
+        false
     }
 
     pub fn len(&self) -> usize {

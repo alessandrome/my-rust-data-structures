@@ -151,38 +151,33 @@ impl<T: Display + PartialEq> SinglyLinkedList<T> {
         None
     }
 
-    pub fn remove(&mut self, index: usize) -> bool {
+    pub fn remove(&mut self, index: usize) -> Option<T> {
         if index < self.length {
-            self.length -= 1;
-            if self.length == 0 {
-                // Just one element
-                self.head = None;
-                self.tail = None;
-            } else {
-                let mut pre_node_opt: _ = None;
-                for i in 0..index {
-                    // pre_node = node_opt.unwrap();
-                    // node_opt = pre_node.next.as_mut();
-                    // pre_node_opt = Some(&mut pre_node);
-                }
-                // node_opt = &None;
-                // let mut current = self.head.as_mut();
-                // for _ in 0..index - 1 {
-                //     if let Some(node) = current {
-                //         current = node.next.as_mut();
-                //     }
-                // }
-
-                match current {
-                    None => {
-
-                    }
-                    Some(_) => {}
-                }
+            // If index is 0, you're popping the head
+            if index == 0 {
+                return self.pop_front();
             }
-            return true;
+
+            // Else if index is the tail pop back
+            if index == self.length - 1 {
+                return self.pop_back();
+            }
+
+            // Else iterate to reach predecessor of node to remove
+            let mut pre_node_opt: _ = self.head.as_mut();
+            for i in 0..index - 1 {
+                pre_node_opt = pre_node_opt.unwrap().next.as_mut();
+            }
+            // Unwrap and change ownerships to bypass node to remove
+            let pre_node_box = pre_node_opt.unwrap();
+            let to_remove = pre_node_box.next.take().unwrap();
+            pre_node_box.next = to_remove.next; // Moving successor of node to remove as next of the predecessor to remove
+
+            // Update length of the list
+            self.length -= 1;
+            return Some(to_remove.value);
         }
-        false
+        None
     }
 
     pub fn len(&self) -> usize {

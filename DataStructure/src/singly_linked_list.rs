@@ -159,17 +159,21 @@ impl<T: Display + PartialEq> SinglyLinkedList<T> {
                 self.head = None;
                 self.tail = None;
             } else {
-                let mut pre_node: _ = self.head.as_mut().unwrap();
                 let mut pre_node_opt: _ = None;
-                let mut node_opt = self.head.as_mut();
                 for i in 0..index {
-                    pre_node = node_opt.unwrap();
-                    node_opt = pre_node.next.as_mut();
-                    pre_node_opt = Some(&mut pre_node);
+                    // pre_node = node_opt.unwrap();
+                    // node_opt = pre_node.next.as_mut();
+                    // pre_node_opt = Some(&mut pre_node);
                 }
                 // node_opt = &None;
+                // let mut current = self.head.as_mut();
+                // for _ in 0..index - 1 {
+                //     if let Some(node) = current {
+                //         current = node.next.as_mut();
+                //     }
+                // }
 
-                match pre_node_opt {
+                match current {
                     None => {
 
                     }

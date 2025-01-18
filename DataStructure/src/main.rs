@@ -1,8 +1,8 @@
-mod singly_linked_list;
-mod double_linked_list;
+mod linear;
+mod non_linear;
 
 use std::any::type_name;
-use singly_linked_list::{SinglyLinkedList};
+use linear::singly_linked_list::{SinglyLinkedList};
 
 
 fn print_type_of<T>(_: &T) {

@@ -13,7 +13,7 @@ pub struct SinglyLinkedList<T> {
     length: usize,
 }
 
-impl<T: Display + PartialEq> SinglyLinkedList<T> {
+impl<T: PartialEq> SinglyLinkedList<T> {
     pub fn new() -> SinglyLinkedList<T> {
         SinglyLinkedList {
             tail: None,

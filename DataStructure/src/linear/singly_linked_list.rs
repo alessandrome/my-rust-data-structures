@@ -3,10 +3,11 @@ mod tests;
 
 use node::Node;
 use std::any::type_name;
-use std::fmt::{write, Display, Formatter};
+use std::fmt::{write, Debug, Display, Formatter};
 use std::ptr::NonNull;
 use std::ops::{Index, IndexMut};
 
+#[derive(Debug)]
 pub struct SinglyLinkedList<T> {
     head: Option<Box<Node<T>>>,
     tail: Option<NonNull<Node<T>>>,
@@ -186,7 +187,7 @@ impl<T: PartialEq> SinglyLinkedList<T> {
         self.length
     }
 
-    pub fn print(&self) {
+    pub fn print(&self) where T:Display {
         if self.length > 0 {
             let mut node_opt = &self.head;
             while let Some(node) = node_opt {

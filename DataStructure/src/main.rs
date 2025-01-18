@@ -85,6 +85,15 @@ fn main() {
     println!("Use .find (Index position)");
     print!("{}", ll.find(&8).unwrap());
     if let Some(val) = ll.find(&11) { print!(" {}", val) } else { print!(" None") };
-    print!(" {}", ll.find(&7).unwrap());
+    println!(" {}", ll.find(&7).unwrap());
+
+    let mut removed = ll.remove(4).unwrap();
+    println!("Removed {}", removed);
+    ll.print();
+    removed = ll.remove(ll.len() - 1).unwrap();
+    println!("Removed {}", removed);
+    ll.print();
+    ll.push_back(70);
+    ll.print();
     // println!("Test pop: {}", r.is_some());
 }

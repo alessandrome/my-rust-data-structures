@@ -2,8 +2,9 @@ pub mod node;
 
 use node::Node;
 use std::any::type_name;
-use std::fmt::Display;
+use std::fmt::{write, Display, Formatter};
 use std::ptr::NonNull;
+use std::ops::{Index, IndexMut};
 
 pub struct SinglyLinkedList<T> {
     head: Option<Box<Node<T>>>,
@@ -198,5 +199,47 @@ impl<T: Display + PartialEq> SinglyLinkedList<T> {
         } else {
             println!("()");
         }
+    }
+}
+
+impl<T> Index<usize> for SinglyLinkedList<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        if index >= self.length {
+            panic!("Index {} out of bounds, list length is {}", index, self.length);
+        }
+        let mut node_box = self.head.as_ref().unwrap();
+        for _ in 0..index {
+            node_box = node_box.next.as_ref().unwrap();
+        }
+        &node_box.value
+    }
+}
+
+impl<T> IndexMut<usize> for SinglyLinkedList<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if index >= self.length {
+            panic!("Index {} out of bounds, list length is {}", index, self.length);
+        }
+        let mut node_box = self.head.as_mut().unwrap();
+        for _ in 0..index {
+            node_box = node_box.next.as_mut().unwrap();
+        }
+        &mut node_box.value
+    }
+}
+
+impl<T: Display> Display for SinglyLinkedList<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[")?;
+        let mut node_box = self.head.as_ref().unwrap();
+        for i in 0..self.length {
+            write!(f, "{}", node_box.value)?;
+            if i < self.length - 1 {
+                write!(f, ", ")?;
+            }
+        }
+        write!(f, "]")
     }
 }

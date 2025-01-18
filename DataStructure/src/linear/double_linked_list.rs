@@ -1,5 +1,9 @@
 mod node;
+
+#[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod benchs;
 
 use node::Node;
 use std::ptr::NonNull;

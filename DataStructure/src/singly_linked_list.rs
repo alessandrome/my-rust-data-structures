@@ -1,4 +1,5 @@
 pub mod node;
+mod tests;
 
 use node::Node;
 use std::any::type_name;

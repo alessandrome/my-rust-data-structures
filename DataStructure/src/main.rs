@@ -1,4 +1,5 @@
 mod singly_linked_list;
+mod double_linked_list;
 
 use std::any::type_name;
 use singly_linked_list::{SinglyLinkedList};

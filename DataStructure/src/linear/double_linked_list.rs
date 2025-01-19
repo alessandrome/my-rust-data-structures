@@ -190,6 +190,9 @@ impl<T> DoubleLinkedList<T> {
         if self.length == 0 {
             return Err(format!("Removing index {}: out of bound", index));
         }
+        if index >= self.length {
+            return Err(format!("Index {} out of bounds (Length is {})", index, self.length));
+        }
         if index == 0 {
             return Ok(self.pop_head()?);
         }
@@ -238,7 +241,7 @@ impl<T> DoubleLinkedList<T> {
     }
 
     pub fn get_ref(&mut self, index: usize) -> Result<&T, String> {
-        if index > self.length {
+        if index >= self.length {
             return Err(format!("Index {} out of bounds (Length  {})", index, self.length));
         }
 
@@ -250,14 +253,14 @@ impl<T> DoubleLinkedList<T> {
         }
 
         let mut node = unsafe { self.head.as_ref().unwrap().as_ref() };
-        for _ in 0..index - 1 {
+        for _ in 0..index {
             node = unsafe { node.successor.as_ref().unwrap().as_ref() };
         }
         Ok(&node.value)
     }
 
     pub fn get_mut(&mut self, index: usize) -> Result<&mut T, String> {
-        if index > self.length {
+        if index >= self.length {
             return Err(format!("Index {} out of bounds (Length  {})", index, self.length));
         }
 
@@ -269,7 +272,7 @@ impl<T> DoubleLinkedList<T> {
         }
 
         let mut node = unsafe { self.head.as_mut().unwrap().as_mut() };
-        for _ in 0..index - 1 {
+        for _ in 0..index {
             node = unsafe { node.successor.as_mut().unwrap().as_mut() };
         }
         Ok(&mut node.value)

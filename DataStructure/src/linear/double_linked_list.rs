@@ -213,7 +213,28 @@ impl<T> DoubleLinkedList<T> {
         if self.length == 0 {
             return Err("Get head on empty list");
         }
-        return Ok(unsafe { &*self.head.as_ref().unwrap() })
+        Ok(unsafe { &self.head.as_ref().unwrap().as_ref().value })
+    }
+
+    pub fn get_head_mut(&mut self) -> Result<&mut T, &'static str> {
+        if self.length == 0 {
+            return Err("Get head on empty list");
+        }
+         Ok(unsafe { &mut self.head.as_mut().unwrap().as_mut().value })
+    }
+
+    pub fn get_tail_ref(&self) -> Result<&T, &'static str> {
+        if self.length == 0 {
+            return Err("Get tail on empty list");
+        }
+        Ok(unsafe { &self.tail.as_ref().unwrap().as_ref().value })
+    }
+
+    pub fn get_tail_mut(&mut self) -> Result<&mut T, &'static str> {
+        if self.length == 0 {
+            return Err("Get tail on empty list");
+        }
+        Ok(unsafe { &mut self.tail.as_mut().unwrap().as_mut().value })
     }
 
     pub fn get_ref(&mut self, index: usize) -> Result<&T, String> {
@@ -221,5 +242,36 @@ impl<T> DoubleLinkedList<T> {
             return Err(format!("Index {} out of bounds (Length  {})", index, self.length));
         }
 
+        if index == 0 {
+            return Ok(self.get_head_ref()?);
+        }
+        if index == self.length - 1 {
+            return Ok(self.get_tail_ref()?);
+        }
+
+        let mut node = unsafe { self.head.as_ref().unwrap().as_ref() };
+        for _ in 0..index - 1 {
+            node = unsafe { node.successor.as_ref().unwrap().as_ref() };
+        }
+        Ok(&node.value)
+    }
+
+    pub fn get_mut(&mut self, index: usize) -> Result<&mut T, String> {
+        if index > self.length {
+            return Err(format!("Index {} out of bounds (Length  {})", index, self.length));
+        }
+
+        if index == 0 {
+            return Ok(self.get_head_mut()?);
+        }
+        if index == self.length - 1 {
+            return Ok(self.get_tail_mut()?);
+        }
+
+        let mut node = unsafe { self.head.as_mut().unwrap().as_mut() };
+        for _ in 0..index - 1 {
+            node = unsafe { node.successor.as_mut().unwrap().as_mut() };
+        }
+        Ok(&mut node.value)
     }
 }

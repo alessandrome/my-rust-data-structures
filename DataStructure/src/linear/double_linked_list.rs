@@ -153,4 +153,36 @@ impl<T> DoubleLinkedList<T> {
         }
         None
     }
+
+    pub fn pop_head(&mut self) -> Result<T, &'static str> {
+        if self.length == 0 {
+            return Err("Pop head on empty list");
+        }
+        let box_head = unsafe { Box::from_raw(self.head.unwrap().as_ptr()) };
+        self.head = box_head.successor;
+        if let Some(head) = &mut self.head {
+            unsafe { head.as_mut().predecessor = None };
+        } else {
+            // Popped value was the unique one in the list, now it is empty
+            self.tail = None;
+        }
+        self.length -= 1;
+        Ok(box_head.value)
+    }
+
+    pub fn pop_tail(&mut self) -> Result<T, &'static str> {
+        if self.length == 0 {
+            return Err("Pop tail on empty list");
+        }
+        let box_tail = unsafe { Box::from_raw(self.tail.unwrap().as_ptr()) };
+        self.tail = box_tail.predecessor;
+        if let Some(tail) = &mut self.tail {
+            unsafe { tail.as_mut().successor = None };
+        } else {
+            // Popped value was the unique one in the list, now it is empty
+            self.head = None;
+        }
+        self.length -= 1;
+        Ok(box_tail.value)
+    }
 }

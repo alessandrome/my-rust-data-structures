@@ -185,4 +185,27 @@ impl<T> DoubleLinkedList<T> {
         self.length -= 1;
         Ok(box_tail.value)
     }
+
+    pub fn remove(&mut self, index: usize) -> Result<T, String> {
+        if self.length == 0 {
+            return Err(format!("Removing index {}: out of bound", index));
+        }
+        if index == 0 {
+            return Ok(self.pop_head()?);
+        }
+        if index == self.length - 1 {
+            return Ok(self.pop_tail()?);
+        }
+        let mut previous_node = unsafe { self.head.as_mut().unwrap().as_mut() };
+        for _ in 0..index - 1 {
+            previous_node = unsafe { previous_node.successor.as_mut().unwrap().as_mut() };
+        }
+
+        let mut to_remove = unsafe {Box::from_raw(previous_node.successor.unwrap().as_ptr()) };
+        previous_node.successor = to_remove.successor;
+        unsafe { previous_node.successor.as_mut().unwrap().as_mut().predecessor = to_remove.predecessor };
+
+        self.length -= 1;
+        Ok(to_remove.value)
+    }
 }

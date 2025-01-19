@@ -208,4 +208,18 @@ impl<T> DoubleLinkedList<T> {
         self.length -= 1;
         Ok(to_remove.value)
     }
+
+    pub fn get_head_ref(&self) -> Result<&T, &'static str> {
+        if self.length == 0 {
+            return Err("Get head on empty list");
+        }
+        return Ok(unsafe { &*self.head.as_ref().unwrap() })
+    }
+
+    pub fn get_ref(&mut self, index: usize) -> Result<&T, String> {
+        if index > self.length {
+            return Err(format!("Index {} out of bounds (Length  {})", index, self.length));
+        }
+
+    }
 }

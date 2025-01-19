@@ -7,6 +7,7 @@ mod benchs;
 
 use node::Node;
 use std::ptr::NonNull;
+use std::ops::{Drop};
 
 #[derive(Debug)]
 pub struct DoubleLinkedList<T> {
@@ -276,5 +277,21 @@ impl<T> DoubleLinkedList<T> {
             node = unsafe { node.successor.as_mut().unwrap().as_mut() };
         }
         Ok(&mut node.value)
+    }
+}
+
+impl<T> Drop for DoubleLinkedList<T> {
+    fn drop(&mut self) {
+        let mut current = self.head;
+
+        while let Some(node) = current {
+            unsafe {
+                // Take next node for next iteration
+                current = node.as_ref().successor;
+
+                // Rebuild box with Node pointer and drop it
+                drop(Box::from_raw(node.as_ptr()));
+            }
+        }
     }
 }

@@ -93,9 +93,32 @@ fn test_get_edge_cases() {
 }
 
 #[test]
+fn test_remove() {
+    let mut list = create_list();
+    let mut removed = list.remove(3);
+    assert!(removed.is_ok());
+    assert_eq!(removed.unwrap(), FROM_ARRAY[3]);
+    assert_eq!(list.length(), FROM_ARRAY.len() - 1);
+    removed = list.remove(3);
+    assert!(removed.is_ok());
+    assert_eq!(removed.unwrap(), FROM_ARRAY[4]);
+    assert_eq!(list.length(), FROM_ARRAY.len() - 2);
+    removed = list.remove(2);
+    assert!(removed.is_ok());
+    assert_eq!(removed.unwrap(), FROM_ARRAY[2]);
+    assert_eq!(list.length(), FROM_ARRAY.len() - 3);
+    removed = list.remove(2);
+    assert!(removed.is_ok());
+    assert_eq!(removed.unwrap(), FROM_ARRAY[5]);
+    assert_eq!(list.length(), FROM_ARRAY.len() - 4);
+    assert!(list.remove(FROM_ARRAY.len() - 4).is_err());
+}
+
+#[test]
 fn test_get_out_of_bounds() {
     let mut list = create_list();
     assert!(list.get_ref(FROM_ARRAY.len()).is_err());
+    assert!(list.get_mut(FROM_ARRAY.len()).is_err());
 }
 
 #[test]
@@ -103,4 +126,6 @@ fn test_pop_out_of_bounds() {
     let mut list = create_empty_list();
     assert!(list.pop_head().is_err());
     assert!(list.pop_tail().is_err());
+    assert!(list.get_ref(0).is_err());
+    assert!(list.get_mut(0).is_err());
 }

@@ -112,6 +112,16 @@ fn test_remove() {
     assert_eq!(removed.unwrap(), FROM_ARRAY[5]);
     assert_eq!(list.length(), FROM_ARRAY.len() - 4);
     assert!(list.remove(FROM_ARRAY.len() - 4).is_err());
+    assert_eq!(list.remove(0).unwrap(), -5);
+    assert_eq!(list.remove(list.length() - 1).unwrap(), 5);
+    assert_eq!(list.length(), FROM_ARRAY.len() - 6);
+}
+
+#[test]
+fn test_remove_empty() {
+    let mut list = create_empty_list();
+    let mut removed = list.remove(3);
+    assert!(removed.is_err());
 }
 
 #[test]
@@ -128,4 +138,40 @@ fn test_pop_out_of_bounds() {
     assert!(list.pop_tail().is_err());
     assert!(list.get_ref(0).is_err());
     assert!(list.get_mut(0).is_err());
+}
+
+#[test]
+fn test_insert() {
+    let mut list = create_list();
+    assert!(list.insert(1000, 5).is_ok());
+    assert!(list.insert(1001, 0).is_ok());
+    assert!(list.insert(1002, FROM_ARRAY.len() + 2).is_ok());
+    assert!(list.insert(1003, FROM_ARRAY.len() + 4).is_err());
+    assert_eq!(*list.get_ref(6).unwrap(), 1000);
+    assert_eq!(*list.get_head_ref().unwrap(), 1001);
+    assert_eq!(*list.get_tail_ref().unwrap(), 1002);
+}
+
+#[test]
+fn test_head() {
+    let mut list = create_list();
+    let mut val = list.head_mut().unwrap();
+    assert_eq!(*val, -5);
+    *val = -100;
+    assert_eq!(*list.head_mut().unwrap(), -100);
+    list = create_empty_list();
+    assert!(list.head_mut().is_none());
+    assert!(list.head_ref().is_none());
+}
+
+#[test]
+fn test_tail() {
+    let mut list = create_list();
+    let mut val = list.tail_mut().unwrap();
+    assert_eq!(*val, 5);
+    *val = 100;
+    assert_eq!(*list.tail_mut().unwrap(), 100);
+    list = create_empty_list();
+    assert!(list.tail_mut().is_none());
+    assert!(list.tail_ref().is_none());
 }

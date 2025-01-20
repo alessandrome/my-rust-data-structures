@@ -96,5 +96,5 @@ fn main() {
     ll.print();
     ll.push_back(70);
     ll.print();
-    // println!("Test pop: {}", r.is_some());
+    // println!("{:#?}", ll);
 }

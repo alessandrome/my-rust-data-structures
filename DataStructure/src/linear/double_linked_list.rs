@@ -120,10 +120,9 @@ impl<T> DoubleLinkedList<T> {
             let new_node_ptr = Box::into_raw(new_node);
             previous_node.successor = NonNull::new(new_node_ptr);  // The previous node successor is the new node
             unsafe { (*new_node_ptr).successor.as_mut().unwrap().as_mut().predecessor = NonNull::new(new_node_ptr) };  // Predecessor of successor is the new node
+            // Increase size of list by one
+            self.length += 1;
         }
-
-        // Increase size of list by one
-        self.length += 1;
         Ok(())
     }
 

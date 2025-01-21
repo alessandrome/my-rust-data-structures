@@ -50,6 +50,34 @@ impl<T: Clone> Stack<T> {
     pub fn length(&self) -> usize { self.length }
     pub fn is_empty(&self) -> bool { self.length == 0 }
     pub fn buffer_size(&self) -> usize { self.size }
+    pub fn buffer_is_full(&self) -> bool { self.size == self.length }
+
+    pub fn push(&mut self, item: T) {
+        if self.buffer_is_full() {
+            self._increment_size(STACK_SIZE_INCREMENT);
+        }
+        // TODO
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        if self.length > 0 {
+            self.length -= 1;
+            return Some(unsafe { ptr::read(self.buffer.as_ptr().add(self.length)) });
+        }
+        None
+    }
+    pub fn top(&mut self) -> Option<&T> {
+        if self.length > 0 {
+            return Some(unsafe { &ptr::read(self.buffer.as_ptr().add(self.length)) });
+        }
+        None
+    }
+    pub fn top_mut(&mut self) -> Option<&mut T> {
+        if self.length > 0 {
+            return Some(unsafe { &mut ptr::read(self.buffer.as_ptr().add(self.length)) });
+        }
+        None
+    }
 }
 
 impl<T> Display for Stack<T> {

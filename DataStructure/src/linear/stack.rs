@@ -93,12 +93,12 @@ impl<T: Clone> Stack<T> {
     }
 }
 
-impl<T> Display for Stack<T> {
+impl<T: std::fmt::Display> Display for Stack<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "Top -> [")?;
-        for i in 0..self.length {
-            write!(f, "{}", i)?;
-            if i != self.length - 1 {
+        for i in (0..self.length).rev() {
+            write!(f, "{}", unsafe { self.buffer.as_ptr().add(i).read() })?;
+            if i != 0 {
                 write!(f, ", ")?;
             }
         }

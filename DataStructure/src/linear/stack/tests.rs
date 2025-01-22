@@ -1,6 +1,7 @@
 use super::{Stack, STACK_SIZE_INCREMENT, STACK_START_SIZE};
 
 const STACK_ARRAY: [i32; 9] = [0, -1, 2, -3, 4, -5, 6, -7, 8];
+const STACK_DISPLAY: &'static str = "Top -> [0, -1, 2, -3, 4, -5, 6, -7, 8]";
 
 fn create_stack() -> Stack<i32> {
     let mut stack = Stack::<i32>::new();
@@ -42,12 +43,17 @@ fn test_push() {
 #[test]
 fn test_top() {
     let mut stack = Stack::<i32>::new();
+    assert!(stack.top().is_none());
+    assert!(stack.top_mut().is_none());
     for i in 0..STACK_ARRAY.len() {
         stack.push(STACK_ARRAY[i]);
         let top = stack.top();
         assert!(top.is_some());
         assert_eq!(*top.unwrap(), STACK_ARRAY[i]);
     }
+    let mut top = stack.top_mut().unwrap();
+    *top = 5000;
+    assert_eq!(*stack.top().unwrap(), 5000);
 }
 
 #[test]
@@ -60,4 +66,11 @@ fn test_increment_buffer() {
     stack.push(91);
     assert_eq!(stack.buffer_size(), STACK_START_SIZE + STACK_SIZE_INCREMENT);
     assert!(!stack.buffer_is_full());
+}
+
+#[test]
+fn test_display() {
+    let mut stack = create_stack();
+    let s = format!("{}", stack);
+    assert_eq!(s, STACK_DISPLAY.to_string());
 }

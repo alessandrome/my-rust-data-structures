@@ -1,9 +1,11 @@
+use crate::linear::stack::buffer_guard::BufferGuard;
+use std::alloc::{alloc, dealloc, Layout};
 use std::fmt::{Display, Formatter};
 use std::mem::MaybeUninit;
-use std::alloc::{alloc, dealloc, Layout};
 use std::ptr;
 use std::ptr::NonNull;
 
+mod buffer_guard;
 #[cfg(test)]
 mod tests;
 
@@ -29,34 +31,45 @@ impl<T: Clone> Stack<T> {
         }
     }
 
-    fn _recreate_buffer(&mut self) {
-        let layout = Layout::array::<T>(self.size).unwrap();
-        let ptr = NonNull::new(unsafe { alloc(layout) } as *mut T).expect("Allocation failed");
-        self.buffer = ptr;
-        self.layout = layout;
-    }
-
     fn _increment_size(&mut self, increment: usize) {
-        self.size += increment;
-        let old_array = self.buffer;
-        let old_layout = self.layout;
-        self._recreate_buffer();
+        let new_size = self.size + increment;
+        // Create a temporary new buffer that will be correctly dropped if something goes wrong
+        let buffer_guard = BufferGuard::<T>::new(new_size);
         for i in 0..self.length {
-            unsafe { *self.buffer.as_ptr().add(i) = ptr::read(old_array.as_ptr().add(i)) };
+            unsafe {
+                ptr::write(
+                    buffer_guard.as_ptr().add(i),
+                    ptr::read(self.buffer.as_ptr().add(i)),
+                )
+            };
         }
-        unsafe { dealloc(old_array.as_ptr() as *mut u8, old_layout) };
+        // Deallocate the old buffer and replace it with the new in the buffer guard
+        unsafe { dealloc(self.buffer.as_ptr() as *mut u8, self.layout) };
+        (self.buffer, self.layout) = buffer_guard.into_inner();
+        self.size = new_size;
     }
 
-    pub fn length(&self) -> usize { self.length }
-    pub fn is_empty(&self) -> bool { self.length == 0 }
-    pub fn buffer_size(&self) -> usize { self.size }
-    pub fn buffer_is_full(&self) -> bool { self.size == self.length }
+    pub fn length(&self) -> usize {
+        self.length
+    }
+    pub fn is_empty(&self) -> bool {
+        self.length == 0
+    }
+    pub fn buffer_size(&self) -> usize {
+        self.size
+    }
+    pub fn buffer_is_full(&self) -> bool {
+        self.size == self.length
+    }
 
     pub fn push(&mut self, item: T) {
         if self.buffer_is_full() {
             self._increment_size(STACK_SIZE_INCREMENT);
         }
-        // TODO
+        unsafe {
+            *self.buffer.as_ptr().add(self.length) = item;
+        }
+        self.length += 1;
     }
 
     pub fn pop(&mut self) -> Option<T> {
@@ -68,13 +81,13 @@ impl<T: Clone> Stack<T> {
     }
     pub fn top(&mut self) -> Option<&T> {
         if self.length > 0 {
-            return Some(unsafe { &ptr::read(self.buffer.as_ptr().add(self.length)) });
+            return Some(unsafe { &*self.buffer.as_ptr().add(self.length - 1) });
         }
         None
     }
     pub fn top_mut(&mut self) -> Option<&mut T> {
         if self.length > 0 {
-            return Some(unsafe { &mut ptr::read(self.buffer.as_ptr().add(self.length)) });
+            return Some(unsafe { &mut *self.buffer.as_ptr().add(self.length - 1) });
         }
         None
     }
@@ -95,6 +108,13 @@ impl<T> Display for Stack<T> {
 
 impl<T> Drop for Stack<T> {
     fn drop(&mut self) {
-        unsafe { dealloc(self.buffer.as_ptr() as _, self.layout); }
+        unsafe {
+            // Drop every element to ensure custom and deep drops are executed
+            for i in 0..self.size {
+                ptr::drop_in_place(self.buffer.as_ptr().add(i));
+            }
+            // Drop the buffer array
+            dealloc(self.buffer.as_ptr() as _, self.layout);
+        }
     }
 }

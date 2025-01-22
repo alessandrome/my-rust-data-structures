@@ -21,7 +21,7 @@ pub const STACK_SIZE_INCREMENT: usize = 10;
 
 impl<T: Clone> Stack<T> {
     pub fn new() -> Stack<T> {
-        let layout = Layout::array::<T>(STACK_START_SIZE).unwrap();
+        let layout = Layout::array::<T>(STACK_START_SIZE).expect("Layout error");
         let ptr = NonNull::new(unsafe { alloc(layout) } as *mut T).expect("Allocation failed");
         Stack {
             size: STACK_START_SIZE,
@@ -110,7 +110,7 @@ impl<T> Drop for Stack<T> {
     fn drop(&mut self) {
         unsafe {
             // Drop every element to ensure custom and deep drops are executed
-            for i in 0..self.size {
+            for i in 0..self.length {
                 ptr::drop_in_place(self.buffer.as_ptr().add(i));
             }
             // Drop the buffer array

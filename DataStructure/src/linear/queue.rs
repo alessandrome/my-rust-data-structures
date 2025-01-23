@@ -4,8 +4,7 @@ use std::mem::MaybeUninit;
 use std::ptr;
 use std::ptr::NonNull;
 
-mod buffer_guard;
-use buffer_guard::BufferGuard;
+use crate::linear::buffer_guard::BufferGuard;
 
 #[cfg(test)]
 mod tests;

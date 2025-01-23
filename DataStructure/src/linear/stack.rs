@@ -1,11 +1,10 @@
-use crate::linear::stack::buffer_guard::BufferGuard;
+use crate::linear::buffer_guard::BufferGuard;
 use std::alloc::{alloc, dealloc, Layout};
 use std::fmt::{Display, Formatter};
 use std::mem::MaybeUninit;
 use std::ptr;
 use std::ptr::NonNull;
 
-mod buffer_guard;
 #[cfg(test)]
 mod tests;
 

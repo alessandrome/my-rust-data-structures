@@ -2,6 +2,7 @@ use std::alloc::{alloc, dealloc, Layout};
 use std::mem;
 use std::ptr::NonNull;
 
+#[derive(Debug)]
 pub struct BufferGuard<T> {
     buffer: NonNull<T>,
     layout: Layout,

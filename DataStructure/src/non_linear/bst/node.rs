@@ -12,4 +12,18 @@ impl<T> BSNode<T> {
             right: None,
         }
     }
+    
+    pub fn left(&self) -> &Option<Box<BSNode<T>>> {
+        &self.left
+    }
+    pub fn left_mut(&mut self) -> &mut Option<Box<BSNode<T>>> {
+        &mut self.left
+    }
+    
+    pub fn right(&self) -> &Option<Box<BSNode<T>>> {
+        &self.right
+    }
+    pub fn right_mut(&mut self) -> &mut Option<Box<BSNode<T>>> {
+        &mut self.right
+    }
 }

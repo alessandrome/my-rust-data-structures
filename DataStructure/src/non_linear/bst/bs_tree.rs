@@ -64,13 +64,42 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
         while let Some(node) = checking_boxed_node {
             if node.value == value {
                 return Some(&node.value);
+    fn find_node(&self, value: &T) -> &Option<Box<BSNode<T>>> {
+        let mut checking_boxed_node = &self.root;
+        // USe of _ to not assign a mut ref that will put the new checking_boxed_node ref invalid as another one has been used for a variable that could edit the content of referred item
+        while let Some(_) = checking_boxed_node {
+            let node = checking_boxed_node.as_ref().unwrap();
+            if node.value == *value {
             }
-            if value < node.value {
-                checking_boxed_node = node.left().as_ref();
+            if *value < node.value {
+                checking_boxed_node = node.left();
             } else {
-                checking_boxed_node = node.right().as_ref();
+                checking_boxed_node = node.right();
             }
         }
-        None
+        checking_boxed_node
+    }
+
+    fn find_node_mut(&mut self, value: &T) -> &mut Option<Box<BSNode<T>>> {
+        let mut checking_boxed_node = &mut self.root;
+        // USe of _ to not assign a mut ref that will put the new checking_boxed_node ref invalid as another one has been used for a variable that could edit the content of referred item
+        while let Some(_) = checking_boxed_node {
+            let node = checking_boxed_node.as_mut().unwrap();
+            if node.value == *value {
+            }
+            if *value < node.value {
+                checking_boxed_node = node.left_mut();
+            } else {
+                checking_boxed_node = node.right_mut();
+            }
+        }
+        checking_boxed_node
+    }
+
+    pub fn find(&self, value: &T) -> Option<&T> {
+        match self.find_node(&value) {
+            None => None,
+            Some(node) => Some(&node.value)
+        }
     }
 }

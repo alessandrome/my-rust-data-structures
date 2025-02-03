@@ -18,10 +18,10 @@ fn create_tree() -> BSTree<i32> {
 #[test]
 fn test_find() {
     let tree = create_tree();
-    let result = tree.find(7);
+    let result = tree.find(&7);
     assert!(result.is_some());
     assert_eq!(*result.unwrap(), 7);
-    let result = tree.find(-545);
+    let result = tree.find(&-545);
     assert!(result.is_none());
 }
 
@@ -31,7 +31,15 @@ fn test_insert() {
     let start_size = tree.size();
     let result = tree.insert(99);
     assert_eq!(tree.size(), start_size + 1);
-    let result = tree.find(99);
+    let result = tree.find(&99);
     assert_eq!(tree.size(), start_size + 1);
 }
 
+fn test_remove() {
+    let mut tree = create_tree();
+    let start_size = tree.size();
+    tree.remove(&0);
+    assert_eq!(tree.size(), start_size - 1);
+    tree.remove(&0);
+    assert_eq!(tree.size(), start_size - 1);
+}

@@ -20,6 +20,7 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
         if self.root.is_none() {
             // Tree is empty, the value will be the tree's root
             self.root = Some(new_boxed_node);
+            self.size += 1;
         } else {
             // Tree must be traversed and then inserted the node
             let mut checking_boxed_node = self.root.as_mut().unwrap();
@@ -70,6 +71,7 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
         while let Some(_) = checking_boxed_node {
             let node = checking_boxed_node.as_ref().unwrap();
             if node.value == *value {
+                break;
             }
             if *value < node.value {
                 checking_boxed_node = node.left();
@@ -82,15 +84,16 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
 
     fn find_node_mut(&mut self, value: &T) -> &mut Option<Box<BSNode<T>>> {
         let mut checking_boxed_node = &mut self.root;
-        // USe of _ to not assign a mut ref that will put the new checking_boxed_node ref invalid as another one has been used for a variable that could edit the content of referred item
+        // Use of _ to not assign a mut ref that will put the new checking_boxed_node ref invalid as another one has been used for a variable that could edit the content of referred item
         while let Some(_) = checking_boxed_node {
-            let node = checking_boxed_node.as_mut().unwrap();
-            if node.value == *value {
+            let node_value = &checking_boxed_node.as_ref().unwrap().value;
+            if *node_value == *value {
+                break;
             }
-            if *value < node.value {
-                checking_boxed_node = node.left_mut();
+            if *value < *node_value {
+                checking_boxed_node = checking_boxed_node.as_mut().unwrap().left_mut();
             } else {
-                checking_boxed_node = node.right_mut();
+                checking_boxed_node = checking_boxed_node.as_mut().unwrap().right_mut();
             }
         }
         checking_boxed_node

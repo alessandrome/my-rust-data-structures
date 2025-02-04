@@ -12,6 +12,7 @@ fn create_tree() -> BSTree<i32> {
     for val in TREE_VALUES {
         tree.insert(val);
     }
+    assert_eq!(tree.size(), TREE_VALUES.len());
     tree
 }
 
@@ -35,11 +36,15 @@ fn test_insert() {
     assert_eq!(tree.size(), start_size + 1);
 }
 
+#[test]
 fn test_remove() {
     let mut tree = create_tree();
     let start_size = tree.size();
-    tree.remove(&0);
+    let result = tree.remove(&0);
+    assert!(result.is_some());
+    assert_eq!(result.unwrap(), 0);
     assert_eq!(tree.size(), start_size - 1);
-    tree.remove(&0);
+    let result = tree.remove(&0);
+    assert!(result.is_none());
     assert_eq!(tree.size(), start_size - 1);
 }

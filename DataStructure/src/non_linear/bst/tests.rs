@@ -2,6 +2,7 @@ use crate::non_linear::bst::bs_tree::BSTree;
 
 const TREE_VALUES: [i32; 9] = [5, -1, -2, -3, 7, -9, 0, 10, 4];
 const TREE_DISPLAY: &'static str = "[-9, -3, -2, -1, 0, 4, 5, 7, 10]";
+const TREE_DISPLAY_REMOVED: &'static str = "[-9, -3, -2, -1, 4, 5, 7, 10]";
 
 fn create_empty_tree() -> BSTree<i32> {
     BSTree::<i32>::new()
@@ -47,4 +48,12 @@ fn test_remove() {
     let result = tree.remove(&0);
     assert!(result.is_none());
     assert_eq!(tree.size(), start_size - 1);
+}
+
+#[test]
+fn test_display() {
+    let mut tree = create_tree();
+    assert_eq!(format!("{}", tree), TREE_DISPLAY);
+    let _ = tree.remove(&0);
+    assert_eq!(format!("{}", tree), TREE_DISPLAY_REMOVED);
 }

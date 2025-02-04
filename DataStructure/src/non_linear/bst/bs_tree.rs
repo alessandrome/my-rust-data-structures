@@ -1,4 +1,5 @@
 use std::cmp::{PartialOrd, PartialEq};
+use std::fmt::{write, Display, Formatter};
 use super::node::BSNode;
 
 pub struct BSTree<T: PartialOrd + PartialEq> {
@@ -60,11 +61,56 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
         }
     }
 
-    pub fn find(&self, value: T) -> Option<&T> {
-        let mut checking_boxed_node = self.root.as_ref();
-        while let Some(node) = checking_boxed_node {
-            if node.value == value {
-                return Some(&node.value);
+    fn find_min_node<'a>(root: &'a Option<Box<BSNode<T>>>) -> Option<&'a Option<Box<BSNode<T>>>> {
+        match root {
+            None => None,
+            Some(root_node) => {
+                match root_node.left() {
+                    None => Some(root),
+                    Some(_) => Self::find_min_node(root_node.left()),
+                }
+            }
+        }
+    }
+    fn find_min_node_mut<'a>(root: &'a mut Option<Box<BSNode<T>>>) -> Option<&'a mut Option<Box<BSNode<T>>>> {
+        match root {
+            None => None,
+            Some(_) => {
+                let is_none = root.as_mut().unwrap().left().is_none();
+                if is_none {
+                    Some(root)
+                } else {
+                    Self::find_min_node_mut(root.as_mut().unwrap().left_mut())
+                }
+            }
+        }
+    }
+
+    fn find_max_node<'a>(root: &'a Option<Box<BSNode<T>>>) -> Option<&'a Option<Box<BSNode<T>>>> {
+        match root {
+            None => None,
+            Some(root_node) => {
+                match root_node.right() {
+                    None => Some(root),
+                    Some(_) => Self::find_min_node(root_node.right()),
+                }
+            }
+        }
+    }
+    fn find_max_node_mut<'a>(root: &'a mut Option<Box<BSNode<T>>>) -> Option<&'a mut Option<Box<BSNode<T>>>> {
+        match root {
+            None => None,
+            Some(_) => {
+                let is_none = root.as_mut().unwrap().right().is_none();
+                if is_none {
+                    Some(root)
+                } else {
+                    Self::find_min_node_mut(root.as_mut().unwrap().right_mut())
+                }
+            }
+        }
+    }
+
     fn find_node(&self, value: &T) -> &Option<Box<BSNode<T>>> {
         let mut checking_boxed_node = &self.root;
         // USe of _ to not assign a mut ref that will put the new checking_boxed_node ref invalid as another one has been used for a variable that could edit the content of referred item
@@ -104,5 +150,76 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
             None => None,
             Some(node) => Some(&node.value)
         }
+    }
+
+    pub fn remove(&mut self, value: &T) -> Option<T> {
+        let mut node_opt = self.find_node_mut(value);
+        let mut return_val = None;
+        if node_opt.is_none() {
+            return return_val;
+        }
+
+        // Take out node to remove - Will be dropped at the end of the function
+        let mut removed_node = node_opt.take().unwrap();
+        let left_is_some = removed_node.left().is_some();
+        let right_is_some = removed_node.right().is_some();
+
+        let replace_node = if left_is_some {
+            let max_node_opt = Self::find_max_node_mut(removed_node.left_mut()).unwrap();
+            Some(max_node_opt.take().unwrap())
+        } else if right_is_some {
+            let min_node_opt = Self::find_min_node_mut(removed_node.right_mut()).unwrap();
+            Some(min_node_opt.take().unwrap())
+        } else {
+            None
+        };
+
+        *node_opt = replace_node;
+        return_val = Some(removed_node.value);
+
+        self.size -= 1;
+        return_val
+    }
+
+    pub fn in_order_values_builder<'a>(root: Option<&'a Box<BSNode<T>>>, vec: &mut Vec<&'a T>) {
+        if let Some(node) = root {
+            Self::in_order_values_builder(node.left().as_ref(), vec);
+            vec.push(&node.value);
+            Self::in_order_values_builder(node.right().as_ref(), vec);
+        }
+    }
+    pub fn in_order_values(&self) -> Vec<&T> {
+        let mut vec = Vec::new();
+        Self::in_order_values_builder(self.root.as_ref(), &mut vec);
+        vec
+    }
+}
+
+impl<T: Display + PartialOrd + PartialEq> BSTree<T>{
+    fn in_order_str_helper(root: Option<&Box<BSNode<T>>>, str: &mut String) where T: Display{
+        if let Some(node) = root {
+            Self::in_order_str_helper(node.left().as_ref(), str);
+            str.push_str(format!(", {}", node.value).as_str());
+            Self::in_order_str_helper(node.right().as_ref(), str);
+        }
+    }
+
+    pub fn in_order_str(&self) -> String {
+        let mut str = "[".to_string();
+        let values = self.in_order_values();
+        for i in 0..values.len() {
+            str.push_str(&values[i].to_string());
+            if i != values.len() - 1 {
+                str.push_str(", ");
+            }
+        }
+        str.push(']');
+        str
+    }
+}
+
+impl<T: Display + PartialOrd> Display for BSTree<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.in_order_str())
     }
 }

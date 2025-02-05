@@ -193,17 +193,35 @@ impl<T: PartialOrd + PartialEq> BSTree<T> {
         Self::in_order_values_builder(self.root.as_ref(), &mut vec);
         vec
     }
-}
 
-impl<T: Display + PartialOrd + PartialEq> BSTree<T>{
-    fn in_order_str_helper(root: Option<&Box<BSNode<T>>>, str: &mut String) where T: Display{
+    pub fn pre_order_values_builder<'a>(root: Option<&'a Box<BSNode<T>>>, vec: &mut Vec<&'a T>) {
         if let Some(node) = root {
-            Self::in_order_str_helper(node.left().as_ref(), str);
-            str.push_str(format!(", {}", node.value).as_str());
-            Self::in_order_str_helper(node.right().as_ref(), str);
+            vec.push(&node.value);
+            Self::in_order_values_builder(node.left().as_ref(), vec);
+            Self::in_order_values_builder(node.right().as_ref(), vec);
         }
     }
+    pub fn pre_order_values(&self) -> Vec<&T> {
+        let mut vec = Vec::new();
+        Self::pre_order_values_builder(self.root.as_ref(), &mut vec);
+        vec
+    }
 
+    pub fn post_order_values_builder<'a>(root: Option<&'a Box<BSNode<T>>>, vec: &mut Vec<&'a T>) {
+        if let Some(node) = root {
+            Self::in_order_values_builder(node.left().as_ref(), vec);
+            Self::in_order_values_builder(node.right().as_ref(), vec);
+            vec.push(&node.value);
+        }
+    }
+    pub fn post_order_values(&self) -> Vec<&T> {
+        let mut vec = Vec::new();
+        Self::post_order_values_builder(self.root.as_ref(), &mut vec);
+        vec
+    }
+}
+
+impl<T: Display + PartialOrd + PartialEq> BSTree<T> {
     pub fn in_order_str(&self) -> String {
         let mut str = "[".to_string();
         let values = self.in_order_values();
